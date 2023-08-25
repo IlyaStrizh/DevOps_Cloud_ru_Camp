@@ -1,0 +1,5 @@
+apiVersion: v2
+name: my-app
+description: DevOps_Cloud_ru_Camp
+appVersion: 1.16.0
+version: 0.1.0

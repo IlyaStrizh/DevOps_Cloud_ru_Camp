@@ -1,0 +1,42 @@
+- name: Configure SSH
+  hosts: localhost
+  become: true
+
+  vars:
+    user_name: cloudru
+    user_password: cloudpass
+    ssh_key: "{{ lookup('file', '/media/sf_Peers/DevOps_Cloud_ru_Camp/playbook/id_rsa.pub') }}"
+
+  tasks:
+    - name: Create user
+      user:
+        name: "{{ user_name }}"
+        password: "{{ user_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        createhome: yes
+
+    - name: Allow ssh login with key
+      authorized_key:
+        user: "{{ user_name }}"
+        state: present
+        key: "{{ ssh_key }}"
+
+    - name: Disable root ssh login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Copy public key for user
+      copy:
+        content: "{{ ssh_key }}"
+        dest: "/home/{{ user_name }}/.ssh/id_rsa.pub"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0600'
+
+    - name: Restart sshd service
+      service:
+        name: sshd
+        state: restarted

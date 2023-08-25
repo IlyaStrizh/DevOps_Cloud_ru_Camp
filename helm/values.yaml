@@ -1,0 +1,5 @@
+image:
+  repository: "local/app"
+  tag: "pitermar"
+replicaCount: 3
+authorName: "Ilya"
