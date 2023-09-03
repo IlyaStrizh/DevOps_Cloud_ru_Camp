@@ -1,11 +1,57 @@
+- name: Install dependencies
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install curl
+      apt:
+        name: curl
+        state: present
+
+    - name: Install sshd
+      apt:
+        name: openssh-server
+        state: present
+
+    - name: Restart sshd service
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Minikube
+      shell: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+    - name: Install kubectl
+      shell: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install kubectl /usr/local/bin/
+
+    - name: Add Kubernetes repository key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Install Helm
+      shell: curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+
 - name: Configure SSH
   hosts: localhost
   become: true
 
+
   vars:
     user_name: cloudru
     user_password: cloudpass
-    ssh_key: "{{ lookup('file', '/media/sf_Peers/DevOps_Cloud_ru_Camp/playbook/id_rsa.pub') }}"
+    ssh_key: "{{ lookup('file', 'id_rsa.pub') }}"
 
   tasks:
     - name: Create user
