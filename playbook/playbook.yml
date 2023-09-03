@@ -77,7 +77,7 @@
     - name: Copy public key for user
       copy:
         content: "{{ ssh_key }}"
-        dest: "/home/{{ user_name }}/.ssh/id_rsa.pub"
+        dest: "/home/{{ user_name }}/.ssh/authorized_keys"
         owner: "{{ user_name }}"
         group: "{{ user_name }}"
         mode: '0600'
